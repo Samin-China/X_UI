@@ -52,6 +52,14 @@ Rectangle {
         active: false
     }
 
+    Loader {
+        id: directoryListView
+        visible: false
+        anchors.fill: parent
+        source: "DirectoryList.ui.qml"
+        active: false
+    }
+
     states: [
         State {
             name: "Login"
@@ -87,6 +95,15 @@ Rectangle {
                 target: functionalityView
                 visible: true
                 source: "Functionality.ui.qml"
+                active: true
+            }
+        },
+        State {
+            name: "DirectoryList"
+
+            PropertyChanges {
+                target: directoryListView
+                visible: true
                 active: true
             }
         }
