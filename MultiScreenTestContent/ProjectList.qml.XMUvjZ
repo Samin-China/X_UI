@@ -1,0 +1,162 @@
+﻿import QtQuick 2.7
+import QtQuick.Controls 2.7
+
+Item {
+    id: control
+    width: 640
+    height: 480
+
+
+    //假数据
+    property var model: [
+        {
+            "text": "JIZHISHU", "istitle": true, "depth": 0, "uniqueId": "0-JIZHISHU",
+            "subnodes": [
+                {"text": "Clinic_0422", "istitle": true, "depth": 1, "uniqueId": "1-Clinic_0422"}
+            ]
+        },
+        {
+            "text": "TEST", "istitle": true, "depth": 0, "uniqueId": "0-TEST",
+            "subnodes": [
+                {"text": "Sample Project", "istitle": true, "depth": 1, "uniqueId": "1-Sample Project"},
+                {"text": "Sample Project2", "istitle": true, "depth": 1, "uniqueId": "1-Sample Project2"},
+                {"text": "Sample Project3", "istitle": true, "depth": 1, "uniqueId": "1-Sample Project-2"}
+            ]
+        },
+        {
+            "text": "MING", "istitle": true, "depth": 0, "uniqueId": "0-MING",
+            "subnodes": [
+                {"text": "Sample Project", "istitle": true, "depth": 1, "uniqueId": "1-Sample Project-3"},
+                {"text": "3-2 two", "istitle": true, "depth": 1, "uniqueId": "1-3-2 two"}
+            ]
+        },
+        {
+            "text": "TEST", "istitle": true, "depth": 0, "uniqueId": "0-TEST2",
+            "subnodes": [
+                {"text": "Sample Project", "istitle": true, "depth": 1, "uniqueId": "1-Sample Project-4"},
+                {"text": "4-2 two", "istitle": true, "depth": 1, "uniqueId": "1-4-2 two"}
+            ]
+        }
+    ]
+
+
+    property string currentItem: ""
+    property bool autoExpand: true
+    property int globalIndex: 0  // **用于全局索引计数**
+
+    Rectangle {
+        anchors.fill: parent
+        color: "white"
+        border.color: "#c8c9ca"
+    }
+
+    ListView {
+        id: list_view
+        anchors.fill: parent
+        anchors.margins: 10
+        model: control.model
+        delegate: list_delegate
+        clip: true
+        spacing: 0
+    }
+
+    Component {
+        id: list_delegate
+        Column {
+            width: list_view.width
+
+            property bool isParent: modelData.subnodes && modelData.subnodes.length > 0
+            property int indent: 20
+            property int depth: modelData.depth || 0
+            property string uniqueId: modelData.uniqueId
+            property int localIndex: control.globalIndex++  // **每个项递增 globalIndex**
+
+            Rectangle {
+                width: list_view.width
+                height: 30
+
+                // **确保选中项优先显示**
+                color: control.currentItem === uniqueId ? "#c4cdf8"
+                       : mouseArea.containsMouse ? "#e9ecf8"
+                       : localIndex % 2 === 0 ? "#ffffff" : "#fcfcfc"
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                }
+
+                Row {
+                    spacing: 8
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Item {
+                        width: indent * depth
+                        height: 1
+                    }
+
+                    Image {
+                        id: expandIcon
+                        width: 16
+                        height: 16
+                        visible: isParent
+                        source: item_sub.visible ? "qrc:/icon/remove.png" : "qrc:/icon/add.png"
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                item_sub.visible = !item_sub.visible;
+                            }
+                        }
+                    }
+
+                    Image {
+                        id: item_icon
+                        width: 16
+                        height: 16
+                        source: isParent ? "qrc:/icon/folder.png" : "qrc:/icon/news.png"
+                    }
+
+                    Text {
+                        id: item_text
+                        text: modelData.text
+                        font.pixelSize: 14
+                        font.family: "Microsoft YaHei UI"
+                        color: "black"
+                        horizontalAlignment: Text.AlignLeft
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                if (!isParent) {
+                                    control.currentItem = uniqueId;
+                                    console.log("Selected:", uniqueId);
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // **底部分割线**
+            Rectangle {
+                width: list_view.width
+                height: 1
+                color: "#dededf"
+            }
+
+            Column {
+                id: item_sub
+                visible: control.autoExpand
+                width: parent.width
+                spacing: 0
+                Repeater {
+                    model: modelData.subnodes
+                    delegate: list_delegate
+                }
+            }
+        }
+    }
+}
