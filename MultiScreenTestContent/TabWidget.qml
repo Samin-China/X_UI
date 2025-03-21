@@ -120,7 +120,7 @@ Rectangle {
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
-
+                            cursorShape: Qt.PointingHandCursor
                             Connections {
                                 target: mouseArea
                                 onClicked: startView.state = "Functionality"

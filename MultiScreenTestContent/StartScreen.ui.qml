@@ -53,7 +53,15 @@ Rectangle {
     }
 
     Loader {
-        id: directoryListView
+        id: modelView
+        visible: false
+        anchors.fill: parent
+        source: "DirectoryList.ui.qml"
+        active: false
+    }
+
+    Loader {
+        id: excelTableView
         visible: false
         anchors.fill: parent
         source: "DirectoryList.ui.qml"
@@ -99,11 +107,22 @@ Rectangle {
             }
         },
         State {
-            name: "DirectoryList"
+            name: "Model"
 
             PropertyChanges {
-                target: directoryListView
+                target: modelView
                 visible: true
+                source: "ModelView.ui.qml"
+                active: true
+            }
+        },
+        State {
+            name: "ExcelTable"
+
+            PropertyChanges {
+                target: excelTableView
+                visible: true
+                source: "ExcelTableView.ui.qml"
                 active: true
             }
         }
